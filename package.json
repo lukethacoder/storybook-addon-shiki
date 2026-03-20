@@ -1,16 +1,18 @@
 {
-  "name": "storybook-addon-kit",
-  "version": "0.0.0",
-  "description": "everything you need to build a Storybook addon",
+  "name": "storybook-addon-shiki",
+  "version": "0.1.0",
+  "description": "the faster storybook code block",
   "keywords": [
-    "storybook-addon"
+    "shiki",
+    "syntax highlighting",
+    "code block"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/storybookjs/storybook-addon-kit"
+    "url": "https://github.com/lukethacoder/storybook-addon-shiki"
   },
   "license": "MIT",
-  "author": "package-author",
+  "author": "lukethacoder",
   "type": "module",
   "exports": {
     ".": {
@@ -97,9 +99,17 @@
     ]
   },
   "storybook": {
-    "displayName": "Addon Kit",
+    "displayName": "Shiki",
     "supportedFrameworks": [
-      "supported-frameworks"
+      "react",
+      "vue",
+      "angular",
+      "web-components",
+      "ember",
+      "html",
+      "svelte",
+      "preact",
+      "react-native"
     ],
     "icon": "https://user-images.githubusercontent.com/321738/63501763-88dbf600-c4cc-11e9-96cd-94adadc2fd72.png"
   },
