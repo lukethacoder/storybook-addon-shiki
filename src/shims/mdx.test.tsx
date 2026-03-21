@@ -2,6 +2,7 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
+import type { ShikiHighlighterComponentProps } from '../ShikiHighlighter';
 import { CodeOrSourceMdx } from './mdx';
 import * as loadOptionsModule from './load-options';
 
@@ -11,13 +12,20 @@ vi.mock('./load-options', () => ({
     Promise.resolve({
       theme: 'one-dark-pro',
       langs: ['typescript'],
-    })
+    }),
   ),
 }));
 
 // Mock the ShikiHighlighter component
 vi.mock('../ShikiHighlighter', () => ({
-  ShikiHighlighter: ({ children, language, showLineNumbers, options, className, ...props }: any) => (
+  ShikiHighlighter: ({
+    children,
+    language,
+    showLineNumbers,
+    options,
+    className,
+    ...props
+  }: ShikiHighlighterComponentProps) => (
     <div
       data-testid="shiki-highlighter"
       data-language={language}
@@ -84,22 +92,14 @@ describe('CodeOrSourceMdx', () => {
     });
 
     it('should render code block when className is provided', async () => {
-      render(
-        <CodeOrSourceMdx className="language-typescript">
-          const x = 1;
-        </CodeOrSourceMdx>
-      );
+      render(<CodeOrSourceMdx className="language-typescript">const x = 1;</CodeOrSourceMdx>);
 
       const highlighter = await screen.findByTestId('shiki-highlighter');
       expect(highlighter).toBeInTheDocument();
     });
 
     it('should extract language from className', async () => {
-      render(
-        <CodeOrSourceMdx className="language-python">
-          print("hello")
-        </CodeOrSourceMdx>
-      );
+      render(<CodeOrSourceMdx className="language-python">print(&quot;hello&quot;)</CodeOrSourceMdx>);
 
       const highlighter = await screen.findByTestId('shiki-highlighter');
       expect(highlighter).toHaveAttribute('data-language', 'python');
@@ -118,11 +118,7 @@ describe('CodeOrSourceMdx', () => {
       const languages = ['jsx', 'typescript', 'bash', 'json'];
 
       for (const lang of languages) {
-        const { unmount } = render(
-          <CodeOrSourceMdx className={`language-${lang}`}>
-            const x = 1;
-          </CodeOrSourceMdx>
-        );
+        const { unmount } = render(<CodeOrSourceMdx className={`language-${lang}`}>const x = 1;</CodeOrSourceMdx>);
 
         const highlighter = await screen.findByTestId('shiki-highlighter');
         expect(highlighter).toHaveAttribute('data-language', lang);
@@ -132,11 +128,7 @@ describe('CodeOrSourceMdx', () => {
     });
 
     it('should not show line numbers by default', async () => {
-      render(
-        <CodeOrSourceMdx className="language-typescript">
-          const x = 1;
-        </CodeOrSourceMdx>
-      );
+      render(<CodeOrSourceMdx className="language-typescript">const x = 1;</CodeOrSourceMdx>);
 
       const highlighter = await screen.findByTestId('shiki-highlighter');
       expect(highlighter).toHaveAttribute('data-show-line-numbers', 'false');
@@ -145,11 +137,7 @@ describe('CodeOrSourceMdx', () => {
 
   describe('options loading', () => {
     it('should render successfully with loaded options', async () => {
-      render(
-        <CodeOrSourceMdx className="language-typescript">
-          const x = 1;
-        </CodeOrSourceMdx>
-      );
+      render(<CodeOrSourceMdx className="language-typescript">const x = 1;</CodeOrSourceMdx>);
 
       // Component should render without errors when options are available
       const highlighter = await screen.findByTestId('shiki-highlighter');
@@ -157,11 +145,7 @@ describe('CodeOrSourceMdx', () => {
     });
 
     it('should eventually load options from virtual module', async () => {
-      render(
-        <CodeOrSourceMdx className="language-rust">
-          fn main() {'{'}
-        </CodeOrSourceMdx>
-      );
+      render(<CodeOrSourceMdx className="language-rust">fn main() {'{'}</CodeOrSourceMdx>);
 
       const highlighter = await screen.findByTestId('shiki-highlighter');
       // Options should be loaded after the effect runs
@@ -176,7 +160,7 @@ describe('CodeOrSourceMdx', () => {
       render(
         <CodeOrSourceMdx data-testid="custom-code" title="test">
           inline
-        </CodeOrSourceMdx>
+        </CodeOrSourceMdx>,
       );
 
       const code = await screen.findByTestId('custom-code');
@@ -185,13 +169,9 @@ describe('CodeOrSourceMdx', () => {
 
     it('should forward additional props to ShikiHighlighter', async () => {
       render(
-        <CodeOrSourceMdx
-          className="language-typescript"
-          data-testid="custom-highlighter"
-          title="test"
-        >
+        <CodeOrSourceMdx className="language-typescript" data-testid="custom-highlighter" title="test">
           const x = 1;
-        </CodeOrSourceMdx>
+        </CodeOrSourceMdx>,
       );
 
       const highlighter = await screen.findByTestId('custom-highlighter');
@@ -231,11 +211,7 @@ describe('CodeOrSourceMdx', () => {
     });
 
     it('should handle className without language prefix', async () => {
-      render(
-        <CodeOrSourceMdx className="my-custom-class">
-          const x = 1;
-        </CodeOrSourceMdx>
-      );
+      render(<CodeOrSourceMdx className="my-custom-class">const x = 1;</CodeOrSourceMdx>);
 
       // Should still render as block (has className), but language extraction fails gracefully
       const highlighter = await screen.findByTestId('shiki-highlighter');

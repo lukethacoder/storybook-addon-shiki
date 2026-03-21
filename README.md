@@ -177,6 +177,18 @@ pnpm build
 pnpm storybook 
 ```
 
+## Publishing NPM Package
+
+Manual package updating
+
+```sh
+pnpm whoami
+
+pnpm login
+
+pnpm publish --access public # add --tag TAG_NAME if required
+```
+
 ---
 
 ## Compatibility

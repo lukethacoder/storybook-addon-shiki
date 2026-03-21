@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import type { BundledLanguage, BundledTheme, HighlighterGeneric } from 'shiki';
 import { getHighlighter, resetHighlighter } from './highlighter';
 
 describe('highlighter', () => {
@@ -34,12 +35,12 @@ describe('highlighter', () => {
   });
 
   it('should use custom highlighter if provided', async () => {
-    const customHighlighter = {
+    const customHighlighter: Partial<HighlighterGeneric<BundledLanguage, BundledTheme>> = {
       codeToHtml: () => '<pre>test</pre>',
-    } as any;
+    };
 
     const result = await getHighlighter({
-      highlighter: customHighlighter,
+      highlighter: customHighlighter as HighlighterGeneric<BundledLanguage, BundledTheme>,
     });
 
     expect(result).toBe(customHighlighter);

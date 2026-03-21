@@ -18,6 +18,13 @@
 
 import type { ShikiAddonOptions } from '../types';
 
+interface ShikiOptionsModule {
+  shikiOptions?: ShikiAddonOptions;
+  default?: {
+    shikiOptions?: ShikiAddonOptions;
+  };
+}
+
 let _promise: Promise<ShikiAddonOptions> | null = null;
 
 export function getAddonOptionsAsync(): Promise<ShikiAddonOptions> {
@@ -28,7 +35,7 @@ export function getAddonOptionsAsync(): Promise<ShikiAddonOptions> {
     /* webpackIgnore: true */
     '@lukethacoder/storybook-addon-shiki/options'
   )
-    .then((mod: any) => {
+    .then((mod: ShikiOptionsModule) => {
       const opts = mod.shikiOptions ?? mod.default?.shikiOptions ?? {};
       return opts;
     })
