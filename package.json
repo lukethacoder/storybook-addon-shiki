@@ -1,6 +1,6 @@
 {
   "name": "@lukethacoder/storybook-addon-shiki",
-  "version": "0.1.0",
+  "version": "0.1.1--canary.81f4ec3.0",
   "description": "A Storybook addon that replaces react-syntax-highlighter with Shiki for beautiful, accurate syntax highlighting",
   "keywords": [
     "shiki",
@@ -9,7 +9,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/lukethacoder/storybook-addon-shiki"
+    "url": "git+https://github.com/lukethacoder/storybook-addon-shiki.git"
   },
   "license": "MIT",
   "author": "lukethacoder",
