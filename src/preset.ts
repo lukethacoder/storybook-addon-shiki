@@ -56,14 +56,10 @@ export async function viteFinal(config: Record<string, unknown>, options: { shik
         '@shikijs/langs',
         '@shikijs/themes',
         // 'react-syntax-highlighter',
-        'storybook-addon-shiki/options', // Virtual module
-        'storybook-addon-shiki', // Our own package
+        '@lukethacoder/storybook-addon-shiki/options', // Virtual module
+        '@lukethacoder/storybook-addon-shiki', // Our own package
       ],
       include: [],
-    },
-    // Vite needs to handle CSS from our package
-    css: {
-      // allow our styles.css to be processed
     },
   });
 }
@@ -99,7 +95,7 @@ export async function webpackFinal(config: Record<string, unknown>, options: { s
       alias: {
         ...existingAlias,
         ...aliasesObject,
-        'storybook-addon-shiki/options': optionsDataUri,
+        '@lukethacoder/storybook-addon-shiki/options': optionsDataUri,
         'storybook/internal/components': r('proxy/components-proxy.js'),
         '@storybook/addon-docs/blocks': r('proxy/blocks-proxy.js'),
       },
@@ -143,12 +139,12 @@ function buildAliases(resolve: (...parts: string[]) => string) {
 // Vite virtual-module plugin for runtime options
 // ---------------------------------------------------------------------------
 
-const VIRTUAL_MODULE_ID = 'storybook-addon-shiki/options';
+const VIRTUAL_MODULE_ID = '@lukethacoder/storybook-addon-shiki/options';
 const RESOLVED_ID = `\0${VIRTUAL_MODULE_ID}`;
 
 function shikiOptionsPlugin(options: ShikiAddonOptions) {
   return {
-    name: 'storybook-addon-shiki:options',
+    name: '@lukethacoder/storybook-addon-shiki:options',
     enforce: 'pre' as const,
     resolveId(id: string) {
       if (id === VIRTUAL_MODULE_ID) {
@@ -170,7 +166,7 @@ function transformComponentsPlugin(resolve: (...parts: string[]) => string) {
   const normalizedProxyPath = proxyPath.replace(/\\/g, '/');
 
   return {
-    name: 'storybook-addon-shiki:replace-components',
+    name: '@lukethacoder/storybook-addon-shiki:replace-components',
     enforce: 'pre' as const,
 
     async resolveId(id: string, importer: string | undefined) {
@@ -195,7 +191,7 @@ function transformBlocksPlugin(resolve: (...parts: string[]) => string) {
   const proxyPath = resolve('proxy/blocks-proxy.js');
 
   return {
-    name: 'storybook-addon-shiki:replace-blocks',
+    name: '@lukethacoder/storybook-addon-shiki:replace-blocks',
     enforce: 'pre' as const,
 
     async resolveId(id: string, importer: string | undefined) {
@@ -218,7 +214,7 @@ function transformBlocksPlugin(resolve: (...parts: string[]) => string) {
 // Debug plugin to verify aliases are being applied
 function debugAliasPlugin() {
   return {
-    name: 'storybook-addon-shiki:debug-alias',
+    name: '@lukethacoder/storybook-addon-shiki:debug-alias',
     enforce: 'pre' as const,
     resolveId() {
       return null; // Let other resolvers handle it

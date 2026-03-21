@@ -1,5 +1,5 @@
 {
-  "name": "storybook-addon-shiki",
+  "name": "@lukethacoder/storybook-addon-shiki",
   "version": "0.1.0",
   "description": "A Storybook addon that replaces react-syntax-highlighter with Shiki for beautiful, accurate syntax highlighting",
   "keywords": [

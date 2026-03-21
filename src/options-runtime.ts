@@ -1,7 +1,7 @@
 /**
  * options-runtime.ts
  *
- * This file serves as a static fallback for the `storybook-addon-shiki/options`
+ * This file serves as a static fallback for the `@lukethacoder/storybook-addon-shiki/options`
  * virtual module. In normal usage the preset's viteFinal / webpackFinal hooks
  * replace this with a generated module containing the user's actual config.
  *

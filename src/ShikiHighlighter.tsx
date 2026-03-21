@@ -57,7 +57,7 @@ export function ShikiHighlighter({
       // This ensures we use the correct theme and languages from the config.
       const hasOptions = Object.keys(options).length > 0;
       if (!hasOptions) {
-        console.log('[storybook-addon-shiki] Waiting for options to load...');
+        console.log('[@lukethacoder/storybook-addon-shiki] Waiting for options to load...');
         return;
       }
 

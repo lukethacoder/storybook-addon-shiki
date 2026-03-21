@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { getAddonOptionsAsync } from './load-options';
 
 // Mock the virtual module
-vi.mock('storybook-addon-shiki/options', () => ({
+vi.mock('@lukethacoder/storybook-addon-shiki/options', () => ({
   shikiOptions: {
     theme: 'one-dark-pro',
     langs: ['typescript', 'javascript'],

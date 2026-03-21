@@ -2,7 +2,7 @@
  * shims/load-options.ts
  *
  * Loads the addon options that were injected by the preset as a virtual module
- * (`storybook-addon-shiki/options`).
+ * (`@lukethacoder/storybook-addon-shiki/options`).
  *
  * The virtual module is wired up by:
  *   - Vite:    the `shikiOptionsPlugin` in preset.ts resolves the module ID
@@ -26,14 +26,14 @@ export function getAddonOptionsAsync(): Promise<ShikiAddonOptions> {
   _promise = import(
     /* @vite-ignore */
     /* webpackIgnore: true */
-    'storybook-addon-shiki/options'
+    '@lukethacoder/storybook-addon-shiki/options'
   )
     .then((mod: any) => {
       const opts = mod.shikiOptions ?? mod.default?.shikiOptions ?? {};
       return opts;
     })
     .catch((err) => {
-      console.warn('[storybook-addon-shiki] Failed to load virtual options module:', err);
+      console.warn('[@lukethacoder/storybook-addon-shiki] Failed to load virtual options module:', err);
       return {};
     });
 

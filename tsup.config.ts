@@ -40,7 +40,7 @@ export default defineConfig(async () => {
       '@shikijs/core',
       '@shikijs/langs',
       '@shikijs/themes',
-      'storybook-addon-shiki/options', // our own virtual module must not be bundled
+      '@lukethacoder/storybook-addon-shiki/options', // our own virtual module must not be bundled
       'vite', // used dynamically in preset, must not be bundled
       /^virtual:/, // all virtual modules must be external
     ],
