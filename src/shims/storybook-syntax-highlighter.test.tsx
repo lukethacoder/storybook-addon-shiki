@@ -1,7 +1,8 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
+import type { ShikiHighlighterComponentProps } from '../ShikiHighlighter';
 import { SyntaxHighlighter } from './storybook-syntax-highlighter';
 import * as loadOptionsModule from './load-options';
 
@@ -17,11 +18,18 @@ vi.mock('./load-options', () => ({
 
 // Mock the ShikiHighlighter component
 vi.mock('../ShikiHighlighter', () => ({
-  ShikiHighlighter: ({ children, language, showLineNumbers, options, className, ...props }: any) => (
+  ShikiHighlighter: ({
+    children,
+    language,
+    showLineNumbers,
+    options,
+    className,
+    ...props
+  }: ShikiHighlighterComponentProps) => (
     <div
       data-testid="shiki-highlighter"
       data-language={language}
-      data-show-line-numbers={showLineNumbers}
+      data-show-line-numbers={String(showLineNumbers)}
       data-options={JSON.stringify(options)}
       className={className}
       {...props}
@@ -56,7 +64,7 @@ describe('SyntaxHighlighter', () => {
   });
 
   it('should use custom language when provided', async () => {
-    render(<SyntaxHighlighter language="python">print("hello")</SyntaxHighlighter>);
+    render(<SyntaxHighlighter language="python">print(&quot;hello&quot;)</SyntaxHighlighter>);
 
     const highlighter = await screen.findByTestId('shiki-highlighter');
     expect(highlighter).toHaveAttribute('data-language', 'python');
@@ -207,7 +215,7 @@ describe('SyntaxHighlighter', () => {
     });
 
     it('should handle special characters', async () => {
-      const codeWithSpecialChars = `const str = "Hello <>&'\"";`;
+      const codeWithSpecialChars = `const str = "Hello <>&'"";`;
 
       render(<SyntaxHighlighter>{codeWithSpecialChars}</SyntaxHighlighter>);
 

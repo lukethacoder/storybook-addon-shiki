@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import userEvent from '@testing-library/user-event';
+import type { BundledLanguage, BundledTheme, HighlighterGeneric } from 'shiki';
 import { ShikiHighlighter } from './ShikiHighlighter';
 import * as highlighterModule from './highlighter';
 
@@ -12,13 +13,15 @@ vi.mock('./highlighter', () => ({
 }));
 
 describe('ShikiHighlighter', () => {
-  const mockHighlighter = {
+  const mockHighlighter: Partial<HighlighterGeneric<BundledLanguage, BundledTheme>> = {
     codeToHtml: vi.fn((code: string) => `<pre><code>${code}</code></pre>`),
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(highlighterModule.getHighlighter).mockResolvedValue(mockHighlighter as any);
+    vi.mocked(highlighterModule.getHighlighter).mockResolvedValue(
+      mockHighlighter as HighlighterGeneric<BundledLanguage, BundledTheme>,
+    );
   });
 
   afterEach(() => {

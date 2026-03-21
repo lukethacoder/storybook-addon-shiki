@@ -11,14 +11,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      exclude: [
-        'node_modules/',
-        'dist/',
-        '.storybook/',
-        'src/**/*.stories.{ts,tsx}',
-        'src/stories/',
-        '**/*.d.ts',
-      ],
+      exclude: ['node_modules/', 'dist/', '.storybook/', 'src/**/*.stories.{ts,tsx}', 'src/stories/', '**/*.d.ts'],
     },
   },
 });

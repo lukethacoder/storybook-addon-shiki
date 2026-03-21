@@ -113,26 +113,8 @@ export async function webpackFinal(config: Record<string, unknown>, options: { s
  * Order matters for Vite: more specific paths must come before less specific
  * ones. We use an array to ensure proper ordering.
  */
-function buildAliases(resolve: (...parts: string[]) => string) {
-  return [
-    // ── react-syntax-highlighter (for backwards compatibility) ──
-    // The core renderer component
-    // { find: 'react-syntax-highlighter/dist/esm/prism-light', replacement: resolve('shims/prism-light.js') },
-    // { find: 'react-syntax-highlighter/dist/esm/prism', replacement: resolve('shims/prism-light.js') },
-    // The create-element helper (used by RSH's custom renderer API)
-    // { find: 'react-syntax-highlighter/dist/esm/create-element', replacement: resolve('shims/create-element.js') },
-    // Individual language grammar files — all map to the same no-op stub.
-    // { find: /^react-syntax-highlighter\/dist\/esm\/languages\/prism\/.*/, replacement: resolve('shims/language.js') },
-    // { find: /^react-syntax-highlighter\/dist\/esm\/languages\/hljs\/.*/, replacement: resolve('shims/language.js') },
-    // { find: /^react-syntax-highlighter\/dist\/esm\/styles\/prism\/.*/, replacement: resolve('shims/language.js') },
-    // { find: /^react-syntax-highlighter\/dist\/esm\/styles\/hljs\/.*/, replacement: resolve('shims/language.js') },
-    // CJS variants
-    // { find: 'react-syntax-highlighter/dist/cjs/prism-light', replacement: resolve('shims/prism-light.js') },
-    // { find: 'react-syntax-highlighter/dist/cjs/create-element', replacement: resolve('shims/create-element.js') },
-    // { find: /^react-syntax-highlighter\/dist\/cjs\/languages\/prism\/.*/, replacement: resolve('shims/language.js') },
-    // ── Package root catch-all (must be last) ──
-    // { find: 'react-syntax-highlighter', replacement: resolve('shims/react-syntax-highlighter.js') },
-  ];
+function buildAliases() {
+  return [];
 }
 
 // ---------------------------------------------------------------------------
@@ -163,7 +145,6 @@ function shikiOptionsPlugin(options: ShikiAddonOptions) {
 // Plugin to intercept and replace storybook/internal/components module
 function transformComponentsPlugin(resolve: (...parts: string[]) => string) {
   const proxyPath = resolve('proxy/components-proxy.js');
-  const normalizedProxyPath = proxyPath.replace(/\\/g, '/');
 
   return {
     name: '@lukethacoder/storybook-addon-shiki:replace-components',
