@@ -1,6 +1,6 @@
 {
   "name": "@lukethacoder/storybook-addon-shiki",
-  "version": "0.1.1--canary.81f4ec3.0",
+  "version": "0.1.2",
   "description": "A Storybook addon that replaces react-syntax-highlighter with Shiki for beautiful, accurate syntax highlighting",
   "keywords": [
     "shiki",
@@ -41,7 +41,6 @@
     "build": "tsup",
     "build-storybook": "storybook build",
     "build:watch": "npm run build -- --watch",
-    "postinstall": "node scripts/welcome.js",
     "format": "prettier --write .",
     "lint": "eslint --cache .",
     "lint:fix": "pnpm lint --fix",
