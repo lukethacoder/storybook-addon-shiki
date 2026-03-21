@@ -1,7 +1,7 @@
 {
   "name": "storybook-addon-shiki",
   "version": "0.1.0",
-  "description": "the faster storybook code block",
+  "description": "A Storybook addon that replaces react-syntax-highlighter with Shiki for beautiful, accurate syntax highlighting",
   "keywords": [
     "shiki",
     "syntax highlighting",
@@ -24,22 +24,23 @@
       "default": "./dist/preview.js"
     },
     "./preset": "./dist/preset.js",
-    "./manager": "./dist/manager.js",
-    "./manager-helpers": "./dist/manager-helpers.js",
+    "./options": "./src/options-runtime.ts",
     "./package.json": "./package.json"
   },
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist/**/*",
+    "preset.js",
+    "preview.js",
     "README.md",
-    "*.js",
-    "*.d.ts"
+    "!dist/**/*.map"
   ],
   "scripts": {
     "prebuild": "node -e \"fs.rmSync('./dist', { recursive: true, force: true })\"",
     "build": "tsup",
     "build-storybook": "storybook build",
     "build:watch": "npm run build -- --watch",
-    "eject-ts": "zx scripts/eject-typescript.js",
     "postinstall": "node scripts/welcome.js",
     "format": "prettier --write .",
     "lint": "eslint --cache .",
@@ -50,11 +51,15 @@
     "storybook": "storybook dev -p 6006",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "dependencies": {
+    "shiki": "^3.0.0"
+  },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
-    "@storybook/addon-docs": "next",
+    "@fontsource-variable/fira-code": "^5.2.7",
+    "@storybook/addon-docs": "10.3.1",
     "@storybook/icons": "^2.0.0",
-    "@storybook/react-vite": "next",
+    "@storybook/react-vite": "10.3.1",
     "@types/node": "^20",
     "@types/react": "^18.2.65",
     "@types/react-dom": "^18.2.21",
@@ -65,13 +70,13 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-storybook": "next",
+    "eslint-plugin-storybook": "10.3.1",
     "npm-run-all2": "^8.0.4",
     "prettier": "^3.6.2",
     "prompts": "^2.4.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "storybook": "next",
+    "storybook": "10.3.1",
     "ts-dedent": "^2.2.0",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3",
@@ -80,38 +85,48 @@
     "zx": "^8.7.1"
   },
   "peerDependencies": {
-    "storybook": "*"
+    "shiki": ">=1.0.0",
+    "storybook": "10.3.1"
   },
   "publishConfig": {
     "access": "public"
   },
   "bundler": {
-    "managerEntries": [
-      "src/manager.tsx",
-      "src/manager-helpers.tsx"
+    "exportEntries": [
+      "src/index.ts",
+      "src/ShikiHighlighter.tsx",
+      "src/highlighter.ts"
     ],
     "previewEntries": [
       "src/preview.ts",
-      "src/index.ts"
+      "src/index.ts",
+      "src/ShikiHighlighter.tsx",
+      "src/highlighter.ts",
+      "src/proxy/components-proxy.ts",
+      "src/proxy/blocks-proxy.ts",
+      "src/shims/storybook-syntax-highlighter.tsx",
+      "src/shims/mdx.tsx",
+      "src/shims/load-options.ts"
     ],
     "nodeEntries": [
       "src/preset.ts"
     ]
   },
   "storybook": {
-    "displayName": "Shiki",
+    "displayName": "Shiki Syntax Highlighter",
     "supportedFrameworks": [
       "react",
-      "vue",
+      "vue3",
       "angular",
-      "web-components",
+      "svelte",
       "ember",
       "html",
-      "svelte",
+      "web-components",
       "preact",
-      "react-native"
+      "solid",
+      "qwik"
     ],
-    "icon": "https://user-images.githubusercontent.com/321738/63501763-88dbf600-c4cc-11e9-96cd-94adadc2fd72.png"
+    "icon": "https://shiki.style/logo.svg"
   },
   "packageManager": "pnpm@10.22.0+sha512.bf049efe995b28f527fd2b41ae0474ce29186f7edcb3bf545087bd61fbbebb2bf75362d1307fda09c2d288e1e499787ac12d4fcb617a974718a6051f2eee741c"
 }

@@ -16,11 +16,9 @@ const meta: Meta<typeof Button> = {
   },
   tags: ['autodocs'],
   parameters: {
-    myAddonParameter: `
-<MyComponent boolProp scalarProp={1} complexProp={{ foo: 1, bar: '2' }}>
-  <SomeOtherComponent funcProp={(a) => a.id} />
-</MyComponent>
-`,
+    docs: {
+      codePanel: true,
+    },
   },
 };
 

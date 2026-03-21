@@ -1,0 +1,104 @@
+/*
+ storybook-addon-shiki
+
+ example stylesheet. consumers have the freedom to BYO styles
+*/
+
+.sb-shiki-wrapper {
+  --shiki-light-bg: transparent;
+  --shiki-dark-bg: transparent;
+}
+
+.shiki span {
+  color: var(--shiki-light);
+  background-color: var(--shiki-light-bg);
+}
+
+html,
+.sb-show-main {
+  --shiki-display: block;
+  --shiki-dark-display: none;
+}
+
+.sb-shiki-wrapper {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  overflow: hidden;
+}
+
+.sb-shiki-wrapper--bordered {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  background: #fff;
+}
+
+.sb-shiki-scroller {
+  flex: 1;
+  overflow: auto;
+  max-width: 100%;
+}
+
+.sb-shiki-wrapper :is(pre, code) {
+  font-family: 'Fira Code Variable', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+  tab-size: 2;
+  line-height: 1.6;
+  font-size: 13px;
+}
+.sb-shiki-wrapper pre {
+  margin: 0;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px;
+}
+
+.sb-shiki-wrapper--padded pre {
+  padding: 16px;
+}
+
+.sb-shiki-wrapper code {
+  background: transparent !important;
+}
+
+.sb-shiki-wrapper--line-numbers .line {
+  display: inline-block;
+  width: 100%;
+}
+
+.sb-shiki-wrapper--line-numbers .line::before {
+  content: attr(data-line);
+  display: inline-block;
+  width: 2rem;
+  margin-right: 1rem;
+  text-align: right;
+  color: rgba(100, 100, 100, 0.4);
+  user-select: none;
+  pointer-events: none;
+}
+
+.sb-shiki-copy-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 10px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    opacity 0.15s ease;
+  opacity: 0;
+  z-index: 1;
+}
+
+.sb-shiki-wrapper:hover .sb-shiki-copy-button,
+.sb-shiki-copy-button:focus-visible {
+  opacity: 1;
+}
+
+.sb-shiki-copy-button:hover {
+  background: #f0f0f0;
+}

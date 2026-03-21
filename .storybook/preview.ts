@@ -1,5 +1,8 @@
 import type { Preview } from '@storybook/react-vite';
 
+import '@fontsource-variable/fira-code';
+import './styles.css';
+
 const preview: Preview = {
   parameters: {
     controls: {

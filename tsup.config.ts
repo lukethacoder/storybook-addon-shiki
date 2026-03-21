@@ -31,7 +31,19 @@ export default defineConfig(async () => {
      The following packages are provided by Storybook and should always be externalized
      Meaning they shouldn't be bundled with the addon, and they shouldn't be regular dependencies either
     */
-    external: ['react', 'react-dom', '@storybook/icons'],
+    external: [
+      'react',
+      'react-dom',
+      '@storybook/icons',
+      'lightningcss',
+      'shiki',
+      '@shikijs/core',
+      '@shikijs/langs',
+      '@shikijs/themes',
+      'storybook-addon-shiki/options', // our own virtual module must not be bundled
+      'vite', // used dynamically in preset, must not be bundled
+      /^virtual:/, // all virtual modules must be external
+    ],
   };
 
   const configs: Options[] = [];
