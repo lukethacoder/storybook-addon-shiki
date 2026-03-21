@@ -29,7 +29,6 @@ export function SyntaxHighlighter({
   children,
   language = 'jsx',
   showLineNumbers = false,
-  format: _format,
   ...rest
 }: StorybookSyntaxHighlighterProps) {
   const [options, setOptions] = React.useState<ShikiAddonOptions>({});

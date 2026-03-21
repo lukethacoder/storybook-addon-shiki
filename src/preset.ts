@@ -167,6 +167,7 @@ function shikiOptionsPlugin(options: ShikiAddonOptions) {
 // Plugin to intercept and replace storybook/internal/components module
 function transformComponentsPlugin(resolve: (...parts: string[]) => string) {
   const proxyPath = resolve('proxy/components-proxy.js');
+  const normalizedProxyPath = proxyPath.replace(/\\/g, '/');
 
   return {
     name: 'storybook-addon-shiki:replace-components',

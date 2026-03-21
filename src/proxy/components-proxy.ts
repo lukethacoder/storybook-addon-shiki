@@ -14,6 +14,3 @@ export * from 'storybook/internal/components';
 
 // Override the syntax highlighting components with our Shiki-powered versions
 export { ShikiSyntaxHighlighter as SyntaxHighlighter };
-// export { ShikiSyntaxHighlighter as Code };
-// export { ShikiSyntaxHighlighter as ClipboardCode };
-// export { ShikiSyntaxHighlighter as Pre };

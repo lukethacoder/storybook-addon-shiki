@@ -61,11 +61,6 @@ export function ShikiHighlighter({
         return;
       }
 
-      console.log('[storybook-addon-shiki] ShikiHighlighter rendering with options:', {
-        theme,
-        fullOptions: options,
-      });
-
       const rawCode = children.trim();
       const code = formatter ? await Promise.resolve(formatter(rawCode)) : rawCode;
 
