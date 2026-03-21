@@ -72,7 +72,7 @@ const config: StorybookConfig = {
       name: '@lukethacoder/storybook-addon-shiki',
       options: {
         shiki: {
-          // Any BundledTheme string from Shiki:
+          // any valid shiki theme - `import { type BundledLanguage } from 'shiki'`
           theme: 'one-dark-pro',
         },
       },
@@ -101,48 +101,40 @@ Shiki loads language grammars on-demand. To ensure specific languages are availa
 }
 ```
 
-The following languages are pre-loaded by default: 'jsx', 'tsx', 'typescript', 'javascript', 'css', 'html', 'bash', 'json', 'markdown'.
+The following languages are pre-loaded by default: `jsx`, `tsx`, `typescript`, `javascript`, `css`, `html`, `bash`, `json`, `markdown`.
 
 ### All options
 
+<!-- keep up to date from `./src/types.ts` -->
 ```ts
-interface ShikiAddonOptions {
+/**
+ * Options for configuring the Shiki addon.
+ * These can be set in .storybook/main.ts when registering the addon,
+ * or overridden per-story via parameters.shiki.
+ */
+export interface ShikiAddonOptions {
   /**
    * The Shiki theme to use for syntax highlighting.
    * @default 'vitesse-dark'
    */
-  theme?: string;
+  theme?: BundledTheme | string;
 
   /**
-   * Languages to eagerly load on startup.
-   * Accepts any BundledLanguage string supported by Shiki.
+   * Languages to pre-load. Shiki loads grammars lazily by default; listing
+   * the languages your docs use here avoids any first-render flash.
+   *
+   * @default Common web languages are loaded automatically.
    */
-  langs?: string[];
+  langs?: (BundledLanguage | string)[];
 
   /**
-   * Supply your own pre-built Shiki highlighter. The addon will use it
-   * as-is and skip its own initialisation. Useful if you already create
-   * a highlighter elsewhere in your Storybook config.
+   * Provide your own pre-built Shiki highlighter instance. When supplied the
+   * addon will use it as-is and skip its own initialisation. Useful if you
+   * already create a highlighter in your Storybook config.
    */
-  highlighter?: import('shiki').HighlighterGeneric<any, any>;
+  highlighter?: HighlighterGeneric<BundledLanguage, BundledTheme>;
 }
 ```
-
----
-
-### Props
-
-| Prop              | Type                                          | Default | Description                                             |
-| ----------------- | --------------------------------------------- | ------- | ------------------------------------------------------- |
-| `children`        | `string`                                      | —       | **Required.** The code to highlight.                    |
-| `language`        | `string`                                      | `'jsx'` | A Shiki-supported language identifier.                  |
-| `copyable`        | `boolean`                                     | `false` | Show a Copy button on hover.                            |
-| `bordered`        | `boolean`                                     | `false` | Render a border around the block.                       |
-| `padded`          | `boolean`                                     | `false` | Add internal padding.                                   |
-| `showLineNumbers` | `boolean`                                     | `false` | Display line numbers.                                   |
-| `className`       | `string`                                      | —       | Extra class names for the wrapper.                      |
-| `formatter`       | `(code: string) => string \| Promise<string>` | —       | Transform the code before highlighting (e.g. Prettier). |
-| `options`         | `ShikiAddonOptions`                           | `{}`    | Override addon options per-instance.                    |
 
 ---
 
@@ -157,8 +149,9 @@ The addon uses **proxy modules** that re-export everything from Storybook's inte
 | `storybook/internal/components` | `SyntaxHighlighter`                   |
 | `@storybook/addon-docs/blocks`  | `CodeOrSourceMdx` (used in MDX files) |
 
-When Storybook or any of its addons import these components, they automatically get our Shiki replacements instead. This means:
+When Storybook or any of its addons import these components, they automatically get the addons Shiki replacements instead.
 
+This means:
 - ✅ Docs tab "Show code" blocks use Shiki
 - ✅ MDX code blocks (` ```jsx `) use Shiki
 - ✅ Any addon using `SyntaxHighlighter` uses Shiki
@@ -173,9 +166,15 @@ Addon options configured in `main.ts` are passed into the runtime via a **virtua
 ```sh
 git clone https://github.com/lukethacoder/storybook-addon-shiki
 cd storybook-addon-shiki
+
+# install packages
 pnpm install
-pnpm build        # compile with tsup
-pnpm storybook    # start the dev Storybook (uses the addon on itself)
+
+# compile with tsup
+pnpm build
+
+# start the dev Storybook (uses the addon on itself)
+pnpm storybook 
 ```
 
 ---
