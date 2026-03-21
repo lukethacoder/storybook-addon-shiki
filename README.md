@@ -55,7 +55,7 @@ That's it. Start Storybook and every code block — in the Docs tab, the Source 
 
 ### Shiki Stylesheet
 
-This extensions does not bring its own CSS. You bring your own, you configure it how you like. If you want a drop in "it just works" CSS file, see the [./.storybook/style.css](./.storybook/style.css) file.
+This extensions does not bring its own CSS. You bring your own, you configure it how you like. If you want a drop in "it just works" CSS file, see the [./.storybook/styles.css](./.storybook/styles.css) file.
 
 ---
 
