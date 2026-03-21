@@ -47,3 +47,4 @@ export * from '@storybook/addon-docs/blocks';
 // Export our Shiki-powered replacements
 export { ShikiCodeOrSourceMdx as CodeOrSourceMdx };
 export { ShikiSource as Source };
+export { ShikiSource as Pre };

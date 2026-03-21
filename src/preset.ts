@@ -41,12 +41,11 @@ export async function viteFinal(config: Record<string, unknown>, options: { shik
 
   const addonOptions = options?.shiki ?? {};
 
-  const plugins = [
-    transformComponentsPlugin(r),
-    transformBlocksPlugin(r),
-    shikiOptionsPlugin(addonOptions)
-  ];
-  console.log('[@lukethacoder/storybook-addon-shiki] Registering plugins:', plugins.map(p => p.name));
+  const plugins = [transformComponentsPlugin(r), transformBlocksPlugin(r), shikiOptionsPlugin(addonOptions)];
+  console.log(
+    '[@lukethacoder/storybook-addon-shiki] Registering plugins:',
+    plugins.map((p) => p.name),
+  );
 
   return mergeConfig(config as object, {
     plugins,
@@ -123,7 +122,10 @@ function transformComponentsPlugin(resolve: (...parts: string[]) => string) {
 
       // Only intercept storybook/internal/components when imported from user code
       if (id === 'storybook/internal/components') {
-        console.log('[replace-components] *** MATCHED storybook/internal/components *** from:', importer || 'NO IMPORTER');
+        console.log(
+          '[replace-components] *** MATCHED storybook/internal/components *** from:',
+          importer || 'NO IMPORTER',
+        );
 
         if (!importer) {
           console.log('[replace-components] SKIP: No importer');
@@ -139,8 +141,8 @@ function transformComponentsPlugin(resolve: (...parts: string[]) => string) {
         }
 
         // Allow interception from @storybook/addon-docs (it uses SyntaxHighlighter for the "Show code" panel)
-        const isFromAddonDocs = normalizedImporter.includes('node_modules') &&
-                                normalizedImporter.includes('@storybook/addon-docs');
+        const isFromAddonDocs =
+          normalizedImporter.includes('node_modules') && normalizedImporter.includes('@storybook/addon-docs');
 
         // Don't intercept from node_modules UNLESS it's addon-docs
         if (normalizedImporter.includes('node_modules') && !isFromAddonDocs) {
@@ -168,7 +170,7 @@ function transformComponentsPlugin(resolve: (...parts: string[]) => string) {
   };
 }
 
-function transformBlocksPlugin(resolve: (...parts: string[]) => string) {
+function transformBlocksPluginV2(resolve: (...parts: string[]) => string) {
   const proxyPath = resolve('proxy/blocks-proxy.js'); // .tsx -> .js in dist
 
   return {
@@ -199,13 +201,39 @@ function transformBlocksPlugin(resolve: (...parts: string[]) => string) {
           normalizedImporter.match(/\.(stories|story)\.(js|jsx|ts|tsx|svelte|vue)$/i) ||
           normalizedImporter.endsWith('.mdx') ||
           normalizedImporter.includes('/.storybook/') ||
-          normalizedImporter.includes('\\.storybook\\');
+          normalizedImporter.includes('\\.storybook\\') ||
+          normalizedImporter.includes('@storybook');
 
         if (isUserCode) {
           return proxyPath;
         }
 
         return null;
+      }
+      return null;
+    },
+  };
+}
+
+function transformBlocksPlugin(resolve: (...parts: string[]) => string) {
+  const proxyPath = resolve('proxy/blocks-proxy.js');
+
+  return {
+    name: '@lukethacoder/storybook-addon-shiki:replace-blocks',
+    enforce: 'pre' as const,
+
+    async resolveId(id: string, importer: string | undefined) {
+      // Intercept @storybook/addon-docs/blocks, but NOT when imported from our proxy
+      if (id === '@storybook/addon-docs/blocks') {
+        console.log('[replace-blocks] 🎯 Intercepting @storybook/addon-docs/blocks from:', importer);
+        const normalizedImporter = importer?.replace(/\\/g, '/') || '';
+        const isFromProxy = normalizedImporter.includes('blocks-proxy');
+
+        if (isFromProxy) {
+          return null; // Let Vite resolve normally
+        }
+
+        return proxyPath;
       }
       return null;
     },
