@@ -4,10 +4,9 @@
  * This is the main integration point. It does three things:
  *
  * 1. Registers the preview entry (styles + global annotations).
- * 2. Aliases react-syntax-highlighter imports inside the preview iframe to
- *    our thin shims so Storybook's own SyntaxHighlighter is powered by Shiki.
- * 3. The same aliases also cover any third-party addons that import from
- *    react-syntax-highlighter directly.
+ * 2. Intercepts Storybook's internal component modules (storybook/internal/components
+ *    and @storybook/addon-docs/blocks) to inject our Shiki-powered syntax highlighters.
+ * 3. Provides a virtual module for runtime configuration that is injected at build time.
  *
  * Framework-agnostic: supports both Vite and Webpack 5 builders.
  */
@@ -15,6 +14,8 @@
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { ShikiAddonOptions } from './types';
+
+console.log('[@lukethacoder/storybook-addon-shiki] [preset.ts] 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥');
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -26,7 +27,8 @@ const r = (...parts: string[]) => resolve(__dirname, ...parts);
 // Preset entry points
 // ---------------------------------------------------------------------------
 
-export const previewAnnotations = () => [r('preview')];
+// Removed previewAnnotations - not needed for this addon's functionality
+// and causes conflicts with Svelte framework preset
 
 // ---------------------------------------------------------------------------
 // Vite integration
@@ -35,32 +37,19 @@ export const previewAnnotations = () => [r('preview')];
 export async function viteFinal(config: Record<string, unknown>, options: { shiki?: ShikiAddonOptions }) {
   const { mergeConfig } = await import('vite');
 
+  console.log('[@lukethacoder/storybook-addon-shiki] [preset.ts] viteFinal() 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥');
+
   const addonOptions = options?.shiki ?? {};
-  const aliases = buildAliases(r);
+
+  const plugins = [
+    transformComponentsPlugin(r),
+    transformBlocksPlugin(r),
+    shikiOptionsPlugin(addonOptions)
+  ];
+  console.log('[@lukethacoder/storybook-addon-shiki] Registering plugins:', plugins.map(p => p.name));
 
   return mergeConfig(config as object, {
-    plugins: [
-      transformComponentsPlugin(r),
-      transformBlocksPlugin(r),
-      debugAliasPlugin(),
-      shikiOptionsPlugin(addonOptions),
-    ],
-    resolve: {
-      alias: aliases,
-    },
-    optimizeDeps: {
-      // Exclude from Vite's dependency pre-bundling so our aliases can intercept
-      exclude: [
-        'shiki',
-        '@shikijs/core',
-        '@shikijs/langs',
-        '@shikijs/themes',
-        // 'react-syntax-highlighter',
-        '@lukethacoder/storybook-addon-shiki/options', // Virtual module
-        '@lukethacoder/storybook-addon-shiki', // Our own package
-      ],
-      include: [],
-    },
+    plugins,
   });
 }
 
@@ -78,23 +67,12 @@ export async function webpackFinal(config: Record<string, unknown>, options: { s
   // the options without creating a temp file on disk.
   const optionsDataUri = `data:text/javascript,export const shikiOptions = ${encodeURIComponent(serialisedOptions)};`;
 
-  // Convert array format to object format for Webpack
-  const aliasesArray = buildAliases(r);
-  const aliasesObject: Record<string, string> = {};
-  for (const alias of aliasesArray) {
-    if (typeof alias.find === 'string') {
-      aliasesObject[alias.find] = alias.replacement;
-    }
-    // Webpack doesn't support regex aliases in the same way, skip those
-  }
-
   return {
     ...config,
     resolve: {
       ...(config.resolve as object),
       alias: {
         ...existingAlias,
-        ...aliasesObject,
         '@lukethacoder/storybook-addon-shiki/options': optionsDataUri,
         'storybook/internal/components': r('proxy/components-proxy.js'),
         '@storybook/addon-docs/blocks': r('proxy/blocks-proxy.js'),
@@ -104,21 +82,7 @@ export async function webpackFinal(config: Record<string, unknown>, options: { s
 }
 
 // ---------------------------------------------------------------------------
-// Shared alias map
-// ---------------------------------------------------------------------------
-
-/**
- * Builds the alias map that re-routes syntax highlighters to our shims.
- *
- * Order matters for Vite: more specific paths must come before less specific
- * ones. We use an array to ensure proper ordering.
- */
-function buildAliases() {
-  return [];
-}
-
-// ---------------------------------------------------------------------------
-// Vite virtual-module plugin for runtime options
+// Vite plugins for module interception and configuration
 // ---------------------------------------------------------------------------
 
 const VIRTUAL_MODULE_ID = '@lukethacoder/storybook-addon-shiki/options';
@@ -129,15 +93,10 @@ function shikiOptionsPlugin(options: ShikiAddonOptions) {
     name: '@lukethacoder/storybook-addon-shiki:options',
     enforce: 'pre' as const,
     resolveId(id: string) {
-      if (id === VIRTUAL_MODULE_ID) {
-        return RESOLVED_ID;
-      }
+      return id === VIRTUAL_MODULE_ID ? RESOLVED_ID : undefined;
     },
     load(id: string) {
-      if (id === RESOLVED_ID) {
-        const code = `export const shikiOptions = ${JSON.stringify(options)};`;
-        return code;
-      }
+      return id === RESOLVED_ID ? `export const shikiOptions = ${JSON.stringify(options)};` : undefined;
     },
   };
 }
@@ -145,60 +104,110 @@ function shikiOptionsPlugin(options: ShikiAddonOptions) {
 // Plugin to intercept and replace storybook/internal/components module
 function transformComponentsPlugin(resolve: (...parts: string[]) => string) {
   const proxyPath = resolve('proxy/components-proxy.js');
+  console.log('[transformComponentsPlugin] Proxy path:', proxyPath);
 
   return {
     name: '@lukethacoder/storybook-addon-shiki:replace-components',
     enforce: 'pre' as const,
 
     async resolveId(id: string, importer: string | undefined) {
-      // Intercept storybook/internal/components, but NOT when imported from our proxy
-      if (id === 'storybook/internal/components') {
-        const normalizedImporter = importer?.replace(/\\/g, '/') || '';
-        const isFromProxy = normalizedImporter.includes('components-proxy');
+      // Temporarily log ALL resolutions to find storybook/internal/components
+      if (id === 'storybook/internal/components' || (id.includes('internal') && id.includes('components'))) {
+        console.log('[replace-components] 🎯 FOUND INTERNAL/COMPONENTS:', id, 'from:', importer);
+      }
 
-        if (isFromProxy) {
-          return null; // Let Vite resolve normally
+      // Log storybook-related modules
+      if (id.includes('storybook') || id.includes('components')) {
+        console.log('[replace-components] Checking:', id, 'from:', importer || 'NO IMPORTER');
+      }
+
+      // Only intercept storybook/internal/components when imported from user code
+      if (id === 'storybook/internal/components') {
+        console.log('[replace-components] *** MATCHED storybook/internal/components *** from:', importer || 'NO IMPORTER');
+
+        if (!importer) {
+          console.log('[replace-components] SKIP: No importer');
+          return null; // No importer - don't intercept
         }
 
-        return proxyPath;
+        const normalizedImporter = importer.replace(/\\/g, '/');
+
+        // Don't intercept our own proxy (prevents circular resolution)
+        if (normalizedImporter.includes('components-proxy')) {
+          console.log('[replace-components] SKIP: From our proxy');
+          return null;
+        }
+
+        // Allow interception from @storybook/addon-docs (it uses SyntaxHighlighter for the "Show code" panel)
+        const isFromAddonDocs = normalizedImporter.includes('node_modules') &&
+                                normalizedImporter.includes('@storybook/addon-docs');
+
+        // Don't intercept from node_modules UNLESS it's addon-docs
+        if (normalizedImporter.includes('node_modules') && !isFromAddonDocs) {
+          console.log('[replace-components] SKIP: From node_modules (not addon-docs)');
+          return null;
+        }
+
+        // Only intercept from user code or addon-docs
+        const isUserCode =
+          normalizedImporter.match(/\.(stories|story)\.(js|jsx|ts|tsx|svelte|vue)$/i) ||
+          normalizedImporter.endsWith('.mdx') ||
+          normalizedImporter.includes('/.storybook/') ||
+          normalizedImporter.includes('\\.storybook\\');
+
+        if (isUserCode || isFromAddonDocs) {
+          console.log('[replace-components] ✅ INTERCEPTING:', isUserCode ? 'user code' : 'addon-docs');
+          return proxyPath;
+        }
+
+        console.log('[replace-components] SKIP: Not user code');
+        return null;
       }
       return null;
     },
   };
 }
 
-// Plugin to intercept and replace @storybook/addon-docs/blocks module
 function transformBlocksPlugin(resolve: (...parts: string[]) => string) {
-  const proxyPath = resolve('proxy/blocks-proxy.js');
+  const proxyPath = resolve('proxy/blocks-proxy.js'); // .tsx -> .js in dist
 
   return {
     name: '@lukethacoder/storybook-addon-shiki:replace-blocks',
     enforce: 'pre' as const,
 
     async resolveId(id: string, importer: string | undefined) {
-      // Intercept @storybook/addon-docs/blocks, but NOT when imported from our proxy
+      // Only intercept @storybook/addon-docs/blocks when imported from user code
       if (id === '@storybook/addon-docs/blocks') {
-        const normalizedImporter = importer?.replace(/\\/g, '/') || '';
-        const isFromProxy = normalizedImporter.includes('blocks-proxy');
-
-        if (isFromProxy) {
-          return null; // Let Vite resolve normally
+        if (!importer) {
+          return null; // No importer - don't intercept
         }
 
-        return proxyPath;
+        const normalizedImporter = importer.replace(/\\/g, '/');
+
+        // Don't intercept our own proxy (prevents circular resolution)
+        if (normalizedImporter.includes('blocks-proxy')) {
+          return null;
+        }
+
+        // Don't intercept from any node_modules (including Storybook internals)
+        if (normalizedImporter.includes('node_modules')) {
+          return null;
+        }
+
+        // Only intercept from user code: stories, MDX files, and docs
+        const isUserCode =
+          normalizedImporter.match(/\.(stories|story)\.(js|jsx|ts|tsx|svelte|vue)$/i) ||
+          normalizedImporter.endsWith('.mdx') ||
+          normalizedImporter.includes('/.storybook/') ||
+          normalizedImporter.includes('\\.storybook\\');
+
+        if (isUserCode) {
+          return proxyPath;
+        }
+
+        return null;
       }
       return null;
-    },
-  };
-}
-
-// Debug plugin to verify aliases are being applied
-function debugAliasPlugin() {
-  return {
-    name: '@lukethacoder/storybook-addon-shiki:debug-alias',
-    enforce: 'pre' as const,
-    resolveId() {
-      return null; // Let other resolvers handle it
     },
   };
 }

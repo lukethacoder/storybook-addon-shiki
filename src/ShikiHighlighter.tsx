@@ -50,6 +50,8 @@ export function ShikiHighlighter({
   useEffect(() => {
     let cancelled = false;
 
+    console.log('[@lukethacoder/storybook-addon-shiki] (ShikiHighlighter) 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥');
+
     async function highlight() {
       if (typeof children !== 'string' || !children.trim()) return;
 

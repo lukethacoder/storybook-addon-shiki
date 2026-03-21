@@ -14,7 +14,7 @@ const meta: Meta<typeof Button> = {
   args: {
     onClick: fn(),
   },
-  tags: ['autodocs'],
+  // tags: ['autodocs'],
   parameters: {
     docs: {
       codePanel: true,

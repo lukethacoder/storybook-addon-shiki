@@ -8,6 +8,8 @@
 // Import our replacement from the shim file
 import { SyntaxHighlighter as ShikiSyntaxHighlighter } from '../shims/storybook-syntax-highlighter';
 
+console.log('[@lukethacoder/storybook-addon-shiki] [components-proxy.ts] 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥');
+
 // Re-export everything from the original module
 // This will include all exports like PopoverProvider, Tooltip, etc.
 export * from 'storybook/internal/components';
