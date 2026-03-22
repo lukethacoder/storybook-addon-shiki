@@ -43,6 +43,8 @@ export default defineConfig(async () => {
       '@lukethacoder/storybook-addon-shiki/options', // our own virtual module must not be bundled
       'vite', // used dynamically in preset, must not be bundled
       /^virtual:/, // all virtual modules must be external
+      /^@storybook\//, // all Storybook packages must be external
+      /^storybook\//, // all Storybook internal packages must be external
     ],
   };
 
@@ -74,6 +76,7 @@ export default defineConfig(async () => {
       platform: 'browser',
       target: 'esnext', // we can use esnext for preview entries since the builders will bundle the addon's preview entries again anyway
       dts: true,
+      splitting: false, // Disable code splitting for preview entries to prevent duplicate module loading
     });
   }
 

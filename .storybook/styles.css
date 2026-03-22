@@ -4,20 +4,16 @@
  example stylesheet. consumers have the freedom to BYO styles
 */
 
-.sb-shiki-wrapper {
-  --shiki-light-bg: transparent;
-  --shiki-dark-bg: transparent;
+.prismjs {
+  .token {
+    /* blanks out prism so you don't get a flash of prism before shiki loads */
+    color: transparent !important;
+  }
 }
 
-.shiki span {
-  color: var(--shiki-light);
-  background-color: var(--shiki-light-bg);
-}
-
-html,
-.sb-show-main {
-  --shiki-display: block;
-  --shiki-dark-display: none;
+/* allows the code panel background to match the shiki theme */
+:is([data-radix-scroll-area-viewport], [data-radix-scroll-area-content], .docblock-source):has(.shiki) {
+  background-color: #282c34;
 }
 
 .sb-shiki-wrapper {

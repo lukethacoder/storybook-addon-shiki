@@ -1,7 +1,7 @@
-import type { Renderer, ProjectAnnotations } from 'storybook/internal/types';
 import { PARAM_KEY } from './constants';
+import './runtime-patcher';
 
-const preview: ProjectAnnotations<Renderer> = {
+const preview = {
   initialGlobals: { [PARAM_KEY]: {} },
 };
 

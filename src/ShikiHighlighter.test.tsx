@@ -46,11 +46,24 @@ describe('ShikiHighlighter', () => {
     });
   });
 
-  it('should wait for options before highlighting', async () => {
-    render(<ShikiHighlighter options={{}}>{`const greeting = 'Hello';`}</ShikiHighlighter>);
+  it('should render with empty options using defaults', async () => {
+    const code = `const greeting = 'Hello';`;
+    render(<ShikiHighlighter options={{}}>{code}</ShikiHighlighter>);
 
-    // Should not call highlighter when options are empty
-    expect(highlighterModule.getHighlighter).not.toHaveBeenCalled();
+    // Should call highlighter even with empty options (uses defaults)
+    await waitFor(() => {
+      expect(highlighterModule.getHighlighter).toHaveBeenCalledWith({});
+    });
+
+    await waitFor(() => {
+      expect(mockHighlighter.codeToHtml).toHaveBeenCalledWith(
+        code,
+        expect.objectContaining({
+          lang: 'jsx',
+          theme: 'vitesse-dark', // default theme
+        }),
+      );
+    });
   });
 
   it('should render code with options', async () => {
