@@ -24,8 +24,9 @@ const config = defineMain({
   stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
   addons: [
     '@storybook/addon-docs',
+    // '@lukethacoder/storybook-addon-shiki',
     {
-      name: import.meta.resolve('./local-preset.ts'),
+      name: '@lukethacoder/storybook-addon-shiki',
       options: {
         shiki: storybookAddonShikiOptions,
       },

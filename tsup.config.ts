@@ -76,6 +76,7 @@ export default defineConfig(async () => {
       platform: 'browser',
       target: 'esnext', // we can use esnext for preview entries since the builders will bundle the addon's preview entries again anyway
       dts: true,
+      splitting: false, // Disable code splitting for preview entries to prevent duplicate module loading
     });
   }
 

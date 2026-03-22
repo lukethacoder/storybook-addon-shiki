@@ -50,18 +50,10 @@ export function ShikiHighlighter({
   useEffect(() => {
     let cancelled = false;
 
-    console.log('[@lukethacoder/storybook-addon-shiki] (ShikiHighlighter) 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥');
-
     async function highlight() {
       if (typeof children !== 'string' || !children.trim()) return;
 
-      // Wait for options to load from the virtual module before attempting to highlight.
-      // This ensures we use the correct theme and languages from the config.
-      const hasOptions = Object.keys(options).length > 0;
-      if (!hasOptions) {
-        console.log('[@lukethacoder/storybook-addon-shiki] Waiting for options to load...');
-        return;
-      }
+      // Note: options can be empty {} - the highlighter will use defaults
 
       const rawCode = children.trim();
       const code = formatter ? await Promise.resolve(formatter(rawCode)) : rawCode;

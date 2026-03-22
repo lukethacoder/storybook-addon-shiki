@@ -1,6 +1,5 @@
 import { PARAM_KEY } from './constants';
-
-console.log('[@lukethacoder/storybook-addon-shiki] (preview.ts) 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥');
+import './runtime-patcher';
 
 const preview = {
   initialGlobals: { [PARAM_KEY]: {} },
