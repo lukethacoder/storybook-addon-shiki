@@ -6,6 +6,71 @@ export interface Result {
 import type { BundledLanguage, BundledTheme, HighlighterGeneric } from 'shiki';
 
 /**
+ * Transformer configuration - opt-in to specific Shiki transformers.
+ * Requires @shikijs/transformers to be installed as a peer dependency.
+ *
+ * Set to `true` to enable a transformer, `false` or `undefined` to disable.
+ */
+export interface TransformerConfig {
+  /**
+   * Add a "focus" effect to specific lines
+   * @see https://shiki.style/packages/transformers#transformerfocusline
+   */
+  focus?: boolean;
+  /**
+   * Highlight specific lines with different background colors
+   * @see https://shiki.style/packages/transformers#transformerhighlight
+   */
+  highlight?: boolean;
+  /**
+   * Add diff indicators (+/-) to lines
+   * @see https://shiki.style/packages/transformers#transformerdiff
+   */
+  diff?: boolean;
+  /**
+   * Add notation-style highlights (e.g., [!code highlight])
+   * @see https://shiki.style/packages/transformers#transformernotationhighlight
+   */
+  notationHighlight?: boolean;
+  /**
+   * Add notation-style diffs (e.g., [!code ++] or [!code --])
+   * @see https://shiki.style/packages/transformers#transformernotationdiff
+   */
+  notationDiff?: boolean;
+  /**
+   * Add notation-style focus (e.g., [!code focus])
+   * @see https://shiki.style/packages/transformers#transformernotationfocus
+   */
+  notationFocus?: boolean;
+  /**
+   * Add notation-style error/warning indicators
+   * @see https://shiki.style/packages/transformers#transformernotationerrorlevel
+   */
+  notationErrorLevel?: boolean;
+  /**
+   * Add notation-style word highlighting
+   * @see https://shiki.style/packages/transformers#transformernotationwordhighlight
+   */
+  notationWordHighlight?: boolean;
+  /**
+   * Colorize matching bracket pairs with different colors
+   * Note: Requires @shikijs/colorized-brackets package (separate from @shikijs/transformers)
+   * @see https://shiki.style/packages/colorized-brackets
+   */
+  colorizedBrackets?: boolean;
+  /**
+   * Compact consecutive empty lines
+   * @see https://shiki.style/packages/transformers#transformercompactlinecompact
+   */
+  compactLineOptions?: boolean;
+  /**
+   * Remove specific lines from the output
+   * @see https://shiki.style/packages/transformers#transformerremovelineremove
+   */
+  removeLineRemove?: boolean;
+}
+
+/**
  * Options for configuring the Shiki addon.
  * These can be set in .storybook/main.ts when registering the addon,
  * or overridden per-story via parameters.shiki.
@@ -31,6 +96,21 @@ export interface ShikiAddonOptions {
    * already create a highlighter in your Storybook config.
    */
   highlighter?: HighlighterGeneric<BundledLanguage, BundledTheme>;
+
+  /**
+   * Configure which Shiki transformers to enable globally.
+   * Requires @shikijs/transformers to be installed.
+   *
+   * @example
+   * ```ts
+   * transformers: {
+   *   focus: true,
+   *   highlight: true,
+   *   diff: true,
+   * }
+   * ```
+   */
+  transformers?: TransformerConfig;
 }
 
 /**

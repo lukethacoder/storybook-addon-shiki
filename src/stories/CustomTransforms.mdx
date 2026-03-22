@@ -1,0 +1,63 @@
+import { Meta, Source } from '@storybook/addon-docs/blocks';
+
+<Meta title="Example/Custom Transforms" />
+
+# Custom Transforms
+
+### transformerNotationDiff
+
+<Source language='svelte' code={`
+  <script lang="ts">
+  	import { SvelteDate } from 'svelte/not/this/package/reactivity'; // [!code --]
+  	import { SvelteDate } from 'svelte/reactivity'; // [!code ++]
+  
+  	let date = new SvelteDate();
+  
+  </script>
+`}/>
+
+### transformerNotationHighlight
+
+<Source language='svelte' code={`
+  <script lang="ts">
+  	import { SvelteDate } from 'svelte/reactivity';
+  
+  	let date = new SvelteDate(); // [!code highlight]
+  
+  </script>
+`}/>
+
+### transformerNotationWordHighlight
+
+<Source language='svelte' code={`
+  <!-- [!code word:new SvelteDate()] -->
+  <script lang="ts">
+  	import { SvelteDate } from 'svelte/reactivity';
+  
+  	let date = new SvelteDate();
+  
+  </script>
+`}/>
+
+### transformerNotationFocus
+
+<Source language='svelte' code={`
+  <script lang="ts">
+  	import { SvelteDate } from 'svelte/reactivity';
+  
+  	let date = new SvelteDate(); // [!code focus]
+  
+  </script>
+`}/>
+
+### transformerNotationErrorLevel
+
+<Source language='svelte' code={`
+  <script lang="ts">
+  	import { SvelteDate } from 'svelte/reactivity'; // [!code error]
+  
+  	let date = new SvelteDate(); // [!code warning]
+   
+    console.log('hello world'); // [!code info]
+  </script>
+`}/>

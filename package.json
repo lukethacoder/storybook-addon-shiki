@@ -62,6 +62,8 @@
   "devDependencies": {
     "@eslint/js": "^9.36.0",
     "@fontsource-variable/fira-code": "^5.2.7",
+    "@shikijs/colorized-brackets": "^4.0.2",
+    "@shikijs/transformers": "^4.0.2",
     "@storybook/addon-docs": "10.3.1",
     "@storybook/icons": "^2.0.0",
     "@storybook/react-vite": "10.3.1",
@@ -99,6 +101,14 @@
   "peerDependencies": {
     "shiki": ">=1.0.0",
     "storybook": "10.3.1"
+  },
+  "peerDependenciesMeta": {
+    "@shikijs/transformers": {
+      "optional": true
+    },
+    "@shikijs/colorized-brackets": {
+      "optional": true
+    }
   },
   "publishConfig": {
     "access": "public"

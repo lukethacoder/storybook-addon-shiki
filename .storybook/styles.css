@@ -35,20 +35,66 @@
   max-width: 100%;
 }
 
+.shiki * {
+  font-family: 'Fira Code Variable', Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;
+}
+
+.shiki {
+  .line {
+    &.add {
+      &:before {
+        content: '+';
+        color: #3dd68c;
+      }
+    }
+    &.remove {
+      opacity: 0.7;
+      &:before {
+        content: '-';
+        color: #cb7676;
+      }
+    }
+    &.highlighted {
+      background-color: rgb(101 117 133 / 16%);
+      margin: 0 -12px;
+      padding: 0 12px;
+      width: calc(100% + 48px);
+      display: inline-block;
+      &.error {
+        background-color: rgb(244 63 94 / 16%);
+      }
+      &.warning {
+        background-color: rgb(234 179 8 / 16%);
+      }
+      &.success {
+        background-color: rgb(101 116 133 / 16%);
+      }
+    }
+    .highlighted-word {
+      border: 1px solid #3c3f44;
+      padding: 1px 3px;
+      margin: -1px -3px;
+      border-radius: 4px;
+    }
+  }
+  &.has-focused .line:not(:is(.has-focus, .focused)) {
+    filter: blur(0.095rem);
+    opacity: 0.4;
+    transition:
+      filter 0.35s,
+      opacity 0.35s;
+  }
+}
+
 .sb-shiki-wrapper :is(pre, code) {
-  font-family: 'Fira Code Variable', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
   tab-size: 2;
   line-height: 1.6;
   font-size: 13px;
 }
-.sb-shiki-wrapper pre {
+.sb-shiki-wrapper .shiki {
   margin: 0;
   -webkit-overflow-scrolling: touch;
-  padding: 8px;
-}
-
-.sb-shiki-wrapper--padded pre {
-  padding: 16px;
+  padding: 12px !important;
 }
 
 .sb-shiki-wrapper code {
