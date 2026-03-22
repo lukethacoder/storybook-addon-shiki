@@ -1,0 +1,20 @@
+.storybook-input {
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.storybook-input input {
+  font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  display: inline-block;
+}
+.storybook-input--primary {
+  color: white;
+  background-color: #1ea7fd;
+}
+.storybook-input--secondary {
+  color: #333;
+  background-color: transparent;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 0px 1px inset;
+}

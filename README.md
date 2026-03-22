@@ -78,6 +78,37 @@ const config: StorybookConfig = {
         shiki: {
           // any valid shiki theme - `import { type BundledLanguage } from 'shiki'`
           theme: 'one-dark-pro',
+          // BYO list of languages that you wish to use
+          langs: [
+            'jsx',
+            'tsx',
+            'typescript',
+            'javascript',
+            'css',
+            'html',
+            'bash',
+            'json',
+            'yaml',
+            'markdown',
+            'graphql',
+            'svelte',
+          ],
+          // requires installing `@shikijs/transformers`
+          transformers: {
+            // Enable notation-based features (use comments like [!code highlight])
+            notationHighlight: true,
+            notationDiff: true,
+            notationFocus: true,
+            notationErrorLevel: true,
+            notationWordHighlight: true,
+            // Enable meta-based features (use meta strings like {1-3})
+            focus: true,
+            highlight: true,
+            // Enable diff indicators
+            diff: true,
+            // Enable colorized brackets - requires installing `@shikijs/colorized-brackets`
+            colorizedBrackets: true,
+          },
         },
       },
     },
@@ -118,25 +149,40 @@ The following languages are pre-loaded by default: `jsx`, `tsx`, `typescript`, `
  */
 export interface ShikiAddonOptions {
   /**
-   * The Shiki theme to use for syntax highlighting.
-   * @default 'vitesse-dark'
-   */
+  * The Shiki theme to use for syntax highlighting.
+  * @default 'vitesse-dark'
+  */
   theme?: BundledTheme | string;
 
   /**
-   * Languages to pre-load. Shiki loads grammars lazily by default; listing
-   * the languages your docs use here avoids any first-render flash.
-   *
-   * @default Common web languages are loaded automatically.
-   */
+  * Languages to pre-load. Shiki loads grammars lazily by default; listing
+  * the languages your docs use here avoids any first-render flash.
+  *
+  * @default Common web languages are loaded automatically.
+  */
   langs?: (BundledLanguage | string)[];
 
   /**
-   * Provide your own pre-built Shiki highlighter instance. When supplied the
-   * addon will use it as-is and skip its own initialisation. Useful if you
-   * already create a highlighter in your Storybook config.
-   */
+  * Provide your own pre-built Shiki highlighter instance. When supplied the
+  * addon will use it as-is and skip its own initialisation. Useful if you
+  * already create a highlighter in your Storybook config.
+  */
   highlighter?: HighlighterGeneric<BundledLanguage, BundledTheme>;
+
+  /**
+  * Configure which Shiki transformers to enable globally.
+  * Requires @shikijs/transformers to be installed.
+  *
+  * @example
+  * ```ts
+  * transformers: {
+  *   focus: true,
+  *   highlight: true,
+  *   diff: true,
+  * }
+  * ```
+  */
+  transformers?: TransformerConfig;
 }
 ```
 

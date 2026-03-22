@@ -3,13 +3,19 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import userEvent from '@testing-library/user-event';
-import type { BundledLanguage, BundledTheme, HighlighterGeneric } from 'shiki';
+import type { BundledLanguage, BundledTheme, HighlighterGeneric, ShikiTransformer } from 'shiki';
 import { ShikiHighlighter } from './ShikiHighlighter';
 import * as highlighterModule from './highlighter';
+import * as transformersModule from './transformers';
 
 // Mock the highlighter module
 vi.mock('./highlighter', () => ({
   getHighlighter: vi.fn(),
+}));
+
+// Mock the transformers module
+vi.mock('./transformers', () => ({
+  loadTransformers: vi.fn(),
 }));
 
 describe('ShikiHighlighter', () => {
@@ -22,6 +28,7 @@ describe('ShikiHighlighter', () => {
     vi.mocked(highlighterModule.getHighlighter).mockResolvedValue(
       mockHighlighter as HighlighterGeneric<BundledLanguage, BundledTheme>,
     );
+    vi.mocked(transformersModule.loadTransformers).mockResolvedValue([]);
   });
 
   afterEach(() => {
@@ -301,6 +308,83 @@ describe('ShikiHighlighter', () => {
         'const x = 1;',
         expect.objectContaining({
           theme: 'vitesse-dark',
+        }),
+      );
+    });
+  });
+
+  it('should load transformers when provided in options', async () => {
+    const mockTransformers: ShikiTransformer[] = [{ name: 'test-transformer' } as ShikiTransformer];
+    vi.mocked(transformersModule.loadTransformers).mockResolvedValue(mockTransformers);
+
+    const transformerConfig = {
+      notationHighlight: true,
+      diff: true,
+    };
+
+    render(
+      <ShikiHighlighter options={{ theme: 'one-dark-pro', transformers: transformerConfig }}>
+        {`const x = 1;`}
+      </ShikiHighlighter>,
+    );
+
+    await waitFor(() => {
+      expect(transformersModule.loadTransformers).toHaveBeenCalledWith(transformerConfig);
+    });
+
+    await waitFor(() => {
+      expect(mockHighlighter.codeToHtml).toHaveBeenCalledWith(
+        'const x = 1;',
+        expect.objectContaining({
+          transformers: mockTransformers,
+        }),
+      );
+    });
+  });
+
+  it('should combine configured transformers with line number transformer', async () => {
+    const mockTransformers: ShikiTransformer[] = [{ name: 'notation-transformer' } as ShikiTransformer];
+    vi.mocked(transformersModule.loadTransformers).mockResolvedValue(mockTransformers);
+
+    render(
+      <ShikiHighlighter
+        showLineNumbers
+        options={{
+          theme: 'one-dark-pro',
+          transformers: { notationHighlight: true },
+        }}
+      >
+        {`const x = 1;`}
+      </ShikiHighlighter>,
+    );
+
+    await waitFor(() => {
+      expect(mockHighlighter.codeToHtml).toHaveBeenCalledWith(
+        'const x = 1;',
+        expect.objectContaining({
+          transformers: expect.arrayContaining([
+            ...mockTransformers,
+            expect.objectContaining({
+              name: 'storybook-shiki:line-numbers',
+            }),
+          ]),
+        }),
+      );
+    });
+  });
+
+  it('should not load transformers when none are configured', async () => {
+    render(<ShikiHighlighter options={{ theme: 'one-dark-pro' }}>{`const x = 1;`}</ShikiHighlighter>);
+
+    await waitFor(() => {
+      expect(transformersModule.loadTransformers).toHaveBeenCalledWith(undefined);
+    });
+
+    await waitFor(() => {
+      expect(mockHighlighter.codeToHtml).toHaveBeenCalledWith(
+        'const x = 1;',
+        expect.objectContaining({
+          transformers: [],
         }),
       );
     });

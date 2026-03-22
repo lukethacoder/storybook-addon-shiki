@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import type { ShikiAddonOptions, ShikiHighlighterProps } from './types';
 import { getHighlighter } from './highlighter';
+import { loadTransformers } from './transformers';
 
 export interface ShikiHighlighterComponentProps extends ShikiHighlighterProps {
   /** Options forwarded from the preset / global config. */
@@ -60,11 +61,20 @@ export function ShikiHighlighter({
 
       const highlighter = await getHighlighter(options);
 
+      // Load configured transformers from options
+      const configuredTransformers = await loadTransformers(options.transformers);
+
+      // Combine configured transformers with line number transformer if needed
+      const transformers = [...configuredTransformers];
+      if (showLineNumbers) {
+        transformers.push(lineNumberTransformer());
+      }
+
       // Use single theme output with inline styles
       const result = highlighter.codeToHtml(code, {
         lang: language,
         theme: theme as never,
-        transformers: showLineNumbers ? [lineNumberTransformer()] : [],
+        transformers,
       });
 
       if (!cancelled) {
