@@ -3,23 +3,23 @@ import { defineMain } from '@storybook/react-vite/node';
 import { type ShikiAddonOptions } from '../src/types';
 
 // Example 1: Simple configuration with theme and languages
-const storybookAddonShikiOptions: ShikiAddonOptions = {
-  theme: 'one-dark-pro',
-  langs: [
-    'jsx',
-    'tsx',
-    'typescript',
-    'javascript',
-    'css',
-    'html',
-    'bash',
-    'json',
-    'yaml',
-    'markdown',
-    'graphql',
-    'svelte',
-  ],
-};
+// const storybookAddonShikiOptions: ShikiAddonOptions = {
+//   theme: 'one-dark-pro',
+//   langs: [
+//     'jsx',
+//     'tsx',
+//     'typescript',
+//     'javascript',
+//     'css',
+//     'html',
+//     'bash',
+//     'json',
+//     'yaml',
+//     'markdown',
+//     'graphql',
+//     'svelte',
+//   ],
+// };
 
 // Example 2: Configuration with transformers enabled
 // Requires: npm install -D @shikijs/transformers @shikijs/colorized-brackets

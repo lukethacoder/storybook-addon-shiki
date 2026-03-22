@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import userEvent from '@testing-library/user-event';
-import type { BundledLanguage, BundledTheme, HighlighterGeneric } from 'shiki';
+import type { BundledLanguage, BundledTheme, HighlighterGeneric, ShikiTransformer } from 'shiki';
 import { ShikiHighlighter } from './ShikiHighlighter';
 import * as highlighterModule from './highlighter';
 import * as transformersModule from './transformers';
@@ -314,8 +314,8 @@ describe('ShikiHighlighter', () => {
   });
 
   it('should load transformers when provided in options', async () => {
-    const mockTransformers = [{ name: 'test-transformer' }];
-    vi.mocked(transformersModule.loadTransformers).mockResolvedValue(mockTransformers as any);
+    const mockTransformers: ShikiTransformer[] = [{ name: 'test-transformer' } as ShikiTransformer];
+    vi.mocked(transformersModule.loadTransformers).mockResolvedValue(mockTransformers);
 
     const transformerConfig = {
       notationHighlight: true,
@@ -343,8 +343,8 @@ describe('ShikiHighlighter', () => {
   });
 
   it('should combine configured transformers with line number transformer', async () => {
-    const mockTransformers = [{ name: 'notation-transformer' }];
-    vi.mocked(transformersModule.loadTransformers).mockResolvedValue(mockTransformers as any);
+    const mockTransformers: ShikiTransformer[] = [{ name: 'notation-transformer' } as ShikiTransformer];
+    vi.mocked(transformersModule.loadTransformers).mockResolvedValue(mockTransformers);
 
     render(
       <ShikiHighlighter
