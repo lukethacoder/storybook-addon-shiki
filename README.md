@@ -27,6 +27,8 @@ yarn add -D @lukethacoder/storybook-addon-shiki shiki
 
 > **Peer dependency:** `shiki >= 1.0.0` is required and must be installed separately. This keeps you in control of the Shiki version.
 
+View on [npm](https://www.npmjs.com/package/@lukethacoder/storybook-addon-shiki)
+
 ---
 
 ## Setup
