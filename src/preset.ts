@@ -1,24 +1,16 @@
 /**
  * preset.ts — Storybook Preset
  *
- * This is the main integration point. It does three things:
+ * This is the main integration point. It does two things:
  *
  * 1. Registers the preview entry (runtime patcher + global annotations).
- * 2. Intercepts @storybook/addon-docs/blocks to inject Shiki-powered syntax highlighters.
- * 3. Provides a virtual module for runtime configuration that is injected at build time.
+ * 2. Provides a virtual module for runtime configuration that is injected at build time.
  *
- * Framework-agnostic: supports both Vite and Webpack 5 builders.
+ * The runtime patcher handles all syntax highlighting replacement at runtime,
+ * making this approach framework-agnostic and resilient to Storybook internal changes.
  */
 
-import { resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import type { ShikiAddonOptions } from './types';
-
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
-
-/** Resolves a path relative to this package's src/ folder (at dev time) or
- *  dist/ folder (when published). tsup copies shims alongside the built output. */
-const r = (...parts: string[]) => resolve(__dirname, ...parts);
 
 // ---------------------------------------------------------------------------
 // Preset entry points
@@ -98,23 +90,20 @@ export async function viteFinal(config: Record<string, unknown>, options?: { shi
 
   const addonOptions = options?.shiki ?? {};
 
-  const plugins = [transformBlocksPlugin(r), shikiOptionsPlugin(addonOptions)];
-
   return mergeConfig(config as object, {
     optimizeDeps: {
-      // Exclude from Vite's dependency pre-bundling so our aliases can intercept
+      // Exclude from Vite's dependency pre-bundling
       exclude: [
         'shiki',
         '@shikijs/core',
         '@shikijs/langs',
         '@shikijs/themes',
-        '@storybook/addon-docs/blocks',
         '@lukethacoder/storybook-addon-shiki/options', // Virtual module
         '@lukethacoder/storybook-addon-shiki', // Our own package
       ],
       include: [],
     },
-    plugins,
+    plugins: [shikiOptionsPlugin(addonOptions)],
   });
 }
 
@@ -139,7 +128,6 @@ export async function webpackFinal(config: Record<string, unknown>, options?: { 
       alias: {
         ...existingAlias,
         '@lukethacoder/storybook-addon-shiki/options': optionsDataUri,
-        '@storybook/addon-docs/blocks': r('proxy/blocks-proxy.js'),
       },
     },
   };
@@ -161,30 +149,6 @@ function shikiOptionsPlugin(options: ShikiAddonOptions) {
     },
     load(id: string) {
       return id === RESOLVED_ID ? `export const shikiOptions = ${JSON.stringify(options)};` : undefined;
-    },
-  };
-}
-
-function transformBlocksPlugin(resolve: (...parts: string[]) => string) {
-  const proxyPath = resolve('proxy/blocks-proxy.js');
-
-  return {
-    name: '@lukethacoder/storybook-addon-shiki:replace-blocks',
-    enforce: 'pre' as const,
-
-    async resolveId(id: string, importer: string | undefined) {
-      // Intercept @storybook/addon-docs/blocks, but NOT when imported from our proxy
-      if (id === '@storybook/addon-docs/blocks') {
-        const normalizedImporter = importer?.replace(/\\/g, '/') || '';
-        const isFromProxy = normalizedImporter.includes('blocks-proxy');
-
-        if (isFromProxy) {
-          return null; // Let Vite resolve normally
-        }
-
-        return proxyPath;
-      }
-      return null;
     },
   };
 }

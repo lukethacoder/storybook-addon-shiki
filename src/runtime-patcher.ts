@@ -13,6 +13,7 @@
 import { getHighlighter } from './highlighter';
 import type { ShikiAddonOptions } from './types';
 import { Obj } from './utils';
+import { loadTransformers } from './transformers';
 
 // TypeScript global augmentation
 declare global {
@@ -150,9 +151,13 @@ async function generateShikiHtml(codeElement: HTMLElement): Promise<HTMLElement 
   const theme = options.theme ?? 'vitesse-dark';
   const highlighter = await getHighlighter(options);
 
+  // Load transformers based on config
+  const transformers = await loadTransformers(options.transformers);
+
   const html = highlighter.codeToHtml(code, {
     lang: language,
     theme: theme as never,
+    transformers,
   });
 
   const tempDiv = document.createElement('div');
