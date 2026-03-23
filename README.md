@@ -1,17 +1,23 @@
 # storybook-addon-shiki
 
-A Storybook addon that replaces Storybook's internal syntax highlighting components with [Shiki](https://shiki.style/) for beautiful, accurate syntax highlighting — with zero changes to your stories.
+A Storybook addon that replaces Storybook's syntax highlighting with [Shiki](https://shiki.style/) for beautiful, accurate syntax highlighting — with zero changes to your stories.
 
 - 🌐 **Framework-agnostic** — works with React, Vue, Angular, Svelte, or any other Storybook framework.
 - 📦 **Fine-grained bundling** — Shiki loads only the languages and themes you need, keeping your bundle lean.
-- 🔌 **Drop-in** — intercepts Storybook's internal components at the bundler level; no code changes required.
+- 🔌 **Drop-in** — uses runtime DOM patching; no fragile module aliasing or bundler hacks.
+- 🛡️ **Future-proof** — resilient to Storybook internal changes since it operates at the DOM level.
+- 🎨 **Full transformer support** — supports all Shiki transformers (notation highlights, diffs, focus, etc.).
 - 🔢 **Line numbers** — full support for line numbers in code blocks.
 - 📋 **Copy button** — optional copy-to-clipboard functionality.
 - ✅ **Supports Vite and Webpack 5** builders.
+- 🎯 **Rich transformers** — Built-in support for diffs, highlights, focus, and more
+- 💅 **BYO CSS** — Bring your own styles for the custom transformers (diffs, focusing, highlighting)
 
 ## Motivation
 
-This addon directly addresses [storybookjs/storybook#29160](https://github.com/storybookjs/storybook/issues/29160). Storybook's default syntax highlighting relies on Prism.js which contributes significantly to bundle size. Shiki offers fine-grained language/theme loading, better highlighting quality through VS Code's grammar engine, and a modern async API.
+This addon directly addresses [storybookjs/storybook#29160](https://github.com/storybookjs/storybook/issues/29160). Storybook's default syntax highlighting relies on Prism.js which contributes significantly to bundle size.
+
+By using a runtime DOM patching approach, this addon is also **future-proof** and won't break when Storybook changes its internal module structure.
 
 ---
 
@@ -43,8 +49,6 @@ const config: StorybookConfig = {
   stories: ['../src/**/*.stories.@(js|jsx|ts|tsx|mdx)'],
   addons: [
     '@storybook/addon-essentials',
-    // Add this line — it must come after addon-essentials so it can
-    // override the SyntaxHighlighter that addon-docs registers.
     '@lukethacoder/storybook-addon-shiki',
   ],
   framework: '@storybook/react-vite',
@@ -192,39 +196,45 @@ export interface ShikiAddonOptions {
 
 ## How it works
 
-This addon uses a **hybrid approach** combining bundler-level interception with runtime DOM patching to ensure comprehensive Shiki coverage across all Storybook contexts.
+This addon uses a **pure runtime approach** with client-side DOM patching — no fragile module aliasing, no bundler hacks. This makes it incredibly resilient to Storybook internal changes.
 
-### Bundler-level interception
+### Runtime DOM Patching
 
-The addon uses **proxy modules** that re-export everything from Storybook's internals except the syntax highlighting components, which are replaced with Shiki-powered versions:
+The addon includes a **runtime patcher** that runs entirely in the browser:
 
-| Storybook Module                | Intercepted Components                |
-| ------------------------------- | ------------------------------------- |
-| `storybook/internal/components` | `SyntaxHighlighter`                   |
-| `@storybook/addon-docs/blocks`  | `CodeOrSourceMdx` (used in MDX files) |
+1. **Storybook renders normally** — Code blocks render using Storybook's default Prism syntax highlighting
+2. **DOM observer activates** — A `MutationObserver` watches for PrismJS code blocks as they're added to the DOM
+3. **Code extraction** — When a Prism block is detected, the addon extracts the raw code text (preserving any transformer notation like `[!code highlight]`)
+4. **Shiki re-rendering** — The code is re-highlighted using Shiki with your configured theme and transformers
+5. **DOM replacement** — The original Prism element is hidden (`display: none`) and the Shiki version is inserted as a sibling
+6. **Content watching** — The addon continues to watch the hidden Prism elements for content changes and automatically regenerates Shiki output when needed
+7. **Cleanup** — When Prism elements are removed from the DOM, their corresponding Shiki versions are cleaned up automatically
 
-When Storybook or any of its addons import these components, they automatically get the addon's Shiki replacements instead.
+This approach ensures comprehensive coverage:
+- ✅ **Docs tab** "Show code" blocks
+- ✅ **MDX code blocks** (` ```jsx `)
+- ✅ **Source panel** (`<Source />` blocks)
+- ✅ **Controls panel** (argTypes with control descriptions)
+- ✅ **Code Panel** (in the manager context)
+- ✅ **Autodocs** (auto-generated documentation)
+- ✅ **Dynamic content** stays in sync as stories change
 
-### Runtime DOM patching
+### Why Runtime Patching?
 
-For contexts where bundler interception isn't sufficient (like the Code Panel and autodocs), the addon includes a **runtime patcher** that:
+Previous approaches relied on bundler-level module aliasing (proxying `@storybook/addon-docs/blocks`, etc.) which was:
+- ❌ Fragile and broke with Storybook internal changes
+- ❌ Complex to maintain across different bundler configurations
+- ❌ Difficult to debug when issues occurred
 
-1. **Observes the DOM** using `MutationObserver` to detect PrismJS code blocks as they're added
-2. **Hides the original** Prism elements with `display: none` (keeping them in the DOM)
-3. **Inserts Shiki versions** as siblings to the hidden Prism blocks
-4. **Watches for content changes** on the hidden Prism elements and automatically regenerates Shiki output
-5. **Cleans up** orphaned Shiki blocks when their corresponding Prism elements are removed
+Runtime patching is:
+- ✅ **Resilient** — Works regardless of how Storybook's internals change
+- ✅ **Simple** — One clear interception point in the DOM
+- ✅ **Universal** — Works with any bundler (Vite, Webpack, etc.)
+- ✅ **Debuggable** — All logic is in one place and runs in the browser
 
-This approach ensures:
-- ✅ **Docs tab** "Show code" blocks use Shiki (bundler interception)
-- ✅ **MDX code blocks** (` ```jsx `) use Shiki (bundler interception)
-- ✅ **Code Panel** uses Shiki (runtime patcher in manager context)
-- ✅ **Autodocs** use Shiki (runtime patcher in preview context)
-- ✅ **Dynamic content** stays in sync as stories change (content watching)
+### Configuration Sharing
 
-### Configuration sharing
-
-Addon options configured in `main.ts` are made available to both contexts:
+Addon options configured in `main.ts` are made available to both preview and manager contexts:
 
 - **Preview context**: Via a **virtual module** (`@lukethacoder/storybook-addon-shiki/options`) generated by the preset's `viteFinal`/`webpackFinal` hooks
 - **Manager context**: Via a **global variable** (`window.__STORYBOOK_ADDON_SHIKI_OPTIONS__`) injected through the `managerHead` hook
