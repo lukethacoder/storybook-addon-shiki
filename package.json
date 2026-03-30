@@ -1,6 +1,6 @@
 {
   "name": "@lukethacoder/storybook-addon-shiki",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Storybook addon that replaces react-syntax-highlighter with Shiki for beautiful, accurate syntax highlighting",
   "keywords": [
     "shiki",
@@ -100,7 +100,7 @@
   },
   "peerDependencies": {
     "shiki": ">=1.0.0",
-    "storybook": "10.3.1"
+    "storybook": "^9.0.0 || ^10.0.0"
   },
   "peerDependenciesMeta": {
     "@shikijs/transformers": {
