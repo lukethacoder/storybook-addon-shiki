@@ -12,7 +12,7 @@
 }
 
 /* allows the code panel background to match the shiki theme */
-:is([data-radix-scroll-area-viewport], [data-radix-scroll-area-content], .docblock-source):has(.shiki) {
+:is([data-radix-scroll-area-viewport], [data-radix-scroll-area-content], .docblock-source):has(pre) {
   background-color: #282c34;
 }
 
@@ -86,12 +86,12 @@
   }
 }
 
-.sb-shiki-wrapper :is(pre, code) {
+:is(pre, code) {
   tab-size: 2;
   line-height: 1.6;
   font-size: 13px;
 }
-.sb-shiki-wrapper .shiki {
+.shiki {
   margin: 0;
   -webkit-overflow-scrolling: touch;
   padding: 12px !important;
