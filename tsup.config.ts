@@ -15,7 +15,7 @@ export default defineConfig(async () => {
   const packageJson = (await import('./package.json', { with: { type: 'json' } })).default;
 
   const {
-    bundler: { managerEntries = [], previewEntries = [], nodeEntries = [] },
+    bundler: { exportEntries = [], managerEntries = [], previewEntries = [], nodeEntries = [] },
   } = packageJson;
 
   const commonConfig: Options = {
@@ -69,10 +69,10 @@ export default defineConfig(async () => {
    they'll have preview-specific packages externalized and they won't be usable in node
    they'll have types generated for them so they can be imported by users when setting up Portable Stories or using CSF factories
   */
-  if (previewEntries.length) {
+  if (exportEntries.length || previewEntries.length) {
     configs.push({
       ...commonConfig,
-      entry: previewEntries,
+      entry: [...new Set([...exportEntries, ...previewEntries])],
       platform: 'browser',
       target: 'esnext', // we can use esnext for preview entries since the builders will bundle the addon's preview entries again anyway
       dts: true,

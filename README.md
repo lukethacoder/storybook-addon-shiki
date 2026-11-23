@@ -47,10 +47,7 @@ import type { StorybookConfig } from '@storybook/react-vite'; // or your framewo
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.stories.@(js|jsx|ts|tsx|mdx)'],
-  addons: [
-    '@storybook/addon-essentials',
-    '@lukethacoder/storybook-addon-shiki',
-  ],
+  addons: ['@storybook/addon-docs', '@lukethacoder/storybook-addon-shiki'],
   framework: '@storybook/react-vite',
 };
 
@@ -58,6 +55,18 @@ export default config;
 ```
 
 That's it. Start Storybook and every code block — in the Docs tab, the Source panel, your MDX pages — is now powered by Shiki.
+
+For CSF 4, also register the preview addon in `.storybook/preview.ts`:
+
+```ts
+import { definePreview } from '@storybook/react-vite'; // or your framework
+import addonDocs from '@storybook/addon-docs';
+import shiki from '@lukethacoder/storybook-addon-shiki';
+
+export default definePreview({
+  addons: [addonDocs(), shiki()],
+});
+```
 
 ### Shiki Stylesheet
 
@@ -77,7 +86,7 @@ import type { StorybookConfig } from '@storybook/react-vite';
 
 const config: StorybookConfig = {
   addons: [
-    '@storybook/addon-essentials',
+    '@storybook/addon-docs',
     {
       name: '@lukethacoder/storybook-addon-shiki',
       options: {
@@ -256,7 +265,7 @@ pnpm install
 pnpm build
 
 # start the dev Storybook (uses the addon on itself)
-pnpm storybook 
+pnpm storybook
 ```
 
 ## Publishing NPM Package
@@ -275,12 +284,16 @@ pnpm publish --access public # add --tag TAG_NAME if required
 
 ## Compatibility
 
-| Storybook  | Builder   | Status |
-| ---------- | --------- | ------ |
-| 8.x        | Vite      | ❓     |
-| 8.x        | Webpack 5 | ❓     |
-| 9.x / 10.x | Vite      | ✅     |
-| 9.x / 10.x | Webpack 5 | ✅     |
+| Storybook   | Builder   | Status       |
+| ----------- | --------- | ------------ |
+| 8.x         | Vite      | ❓           |
+| 8.x         | Webpack 5 | ❓           |
+| 9.x / 10.x  | Vite      | ✅           |
+| 9.x / 10.x  | Webpack 5 | ✅           |
+| 11.x (beta) | Vite      | ✅           |
+| 11.x (beta) | Webpack 5 | ✅           |
+
+Storybook 11 requires Node.js 22.12 or newer and TypeScript 5.9 or 6.x. No addon configuration changes are needed when upgrading from Storybook 10; CSF 3 stories remain supported. Follow the [Storybook 11 migration guide](https://storybook.js.org/docs/11/releases/migration-guide) for changes to your Storybook project.
 
 ---
 
