@@ -1,6 +1,6 @@
 {
   "name": "@lukethacoder/storybook-addon-shiki",
-  "version": "1.1.3",
+  "version": "11.0.0",
   "description": "Adds Shiki for beautiful, accurate syntax highlighting",
   "keywords": [
     "storybook-addon",
